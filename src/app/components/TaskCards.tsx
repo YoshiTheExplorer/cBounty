@@ -33,16 +33,41 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
 
     return (
         <>
-            <div className="flex flex-col justify-between max-w-sm p-6 bg-black border border-slate-200 rounded-lg shadow">
-                <h5 className="mb-2 text-2xl font-bold text-white">{taskName}</h5>
-                <p className="mb-3 text-gray-400">Due: {new Date(Number(dueDate) * 1000).toLocaleString()}</p>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800"
-                >
-                    More Details
-                </button>
+            <div className="flex flex-col justify-between max-w-sm p-6 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg space-y-4">
+                <h5 className="text-2xl font-bold text-white">{taskName}</h5>
+
+                <p className="text-gray-400">
+                    <strong>Due:</strong> {new Date(Number(dueDate) * 1000).toLocaleString()}
+                </p>
+
+                <div className="flex justify-between space-x-4">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200"
+                    >
+                        More Details
+                    </button>
+
+                    <TransactionButton
+                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-200 rounded-lg hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-200"
+                        transaction={() =>
+                            prepareContractCall({
+                                contract,
+                                method: "function completeTask(uint256 _index)",
+                                params: [BigInt(index)],
+                            })
+                        }
+                        onTransactionConfirmed={async () => {
+                            alert("Task completed successfully!");
+                            setIsModalOpen(false);
+                        }}
+                        onError={(error) => alert(`Error: ${error.message}`)}
+                    >
+                        Complete Task
+                    </TransactionButton>
+                </div>
             </div>
+
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
@@ -60,8 +85,8 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                                 Close
                             </button>
                             <TransactionButton
-                                //TODO Why does it not have a blue background? wtf???
-                                className="px-4 py-2 text-sm font-medium text-white-100 bg-blue-600 rounded-lg hover:bg-blue-700"
+                                //FIXME Why does it not have a blue background? wtf???
+                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-200 rounded-lg hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-200"
                                 transaction={() =>
                                     prepareContractCall({
                                         contract,
