@@ -56,9 +56,6 @@ export default function Home() {
   );
 }
 
-//new message here
-const here = 100;
-
 function MainPage({contractAddress, userAddress}: { contractAddress: string; userAddress: string;}) {
   // Fetch the list of tasks from the user's task manager
   const { data: tasks, isPending: isLoadingTasks } = useReadContract({
