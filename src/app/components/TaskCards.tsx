@@ -1,8 +1,8 @@
 'use client';
 import { client } from "@/app/client";
-import { getContract } from "thirdweb";
+import { getContract, prepareContractCall } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
-import { useReadContract } from "thirdweb/react";
+import { TransactionButton, useReadContract} from "thirdweb/react";
 import React, { useState } from "react";
 
 type CampaignCardProps = {
@@ -52,12 +52,32 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                         <p className="mb-4 text-gray-400">
                             Due: {new Date(Number(dueDate) * 1000).toLocaleString()}
                         </p>
-                        <button
-                            onClick={() => setIsModalOpen(false)}
-                            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
-                        >
-                            Close
-                        </button>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+                            >
+                                Close
+                            </button>
+                            <TransactionButton
+                                //TODO Why does it not have a blue background? wtf???
+                                className="px-4 py-2 text-sm font-medium text-white-100 bg-blue-600 rounded-lg hover:bg-blue-700"
+                                transaction={() =>
+                                    prepareContractCall({
+                                        contract,
+                                        method: "function completeTask(uint256 _index)",
+                                        params: [BigInt(index)],
+                                    })
+                                }
+                                onTransactionConfirmed={async () => {
+                                    alert("Task completed successfully!")
+                                    setIsModalOpen(false)
+                                }}
+                                onError={(error) => alert(`Error: ${error.message}`)}
+                            >
+                                Complete Task
+                            </TransactionButton>
+                        </div>
                     </div>
                 </div>
             )}
