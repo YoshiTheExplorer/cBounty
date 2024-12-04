@@ -84,8 +84,8 @@ function MainPage({contractAddress, userAddress}: { contractAddress: string; use
           ) : (
             <p>No Campaigns {userAddress}</p>
           )}
-          //TODO AddTask
-          //FIXME Sort By Time
+          {/*TODO AddTask*/}
+          {/*FIXME Sort By Time*/}
         </div>
       </div>
     </main>

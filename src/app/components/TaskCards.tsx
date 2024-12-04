@@ -49,7 +49,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                     </button>
 
                     <TransactionButton
-                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-200 rounded-lg hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-200"
+                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
                         transaction={() =>
                             prepareContractCall({
                                 contract,
@@ -86,7 +86,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                             </button>
                             <TransactionButton
                                 //FIXME Why does it not have a blue background? wtf???
-                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-200 rounded-lg hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-200"
+                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
                                 transaction={() =>
                                     prepareContractCall({
                                         contract,
