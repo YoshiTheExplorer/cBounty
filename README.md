@@ -18,6 +18,12 @@ This platform's goal is to provide a win-win scenario for users to stay motivate
 
 ---
 
+## Demo
+
+Link Here
+
+---
+
 ## How It Was Built 
 
 1. **Smart Contracts (Solidity)**  
@@ -45,14 +51,17 @@ This platform's goal is to provide a win-win scenario for users to stay motivate
 
 I plan to continue developing TaskChain by focusing on...
 - **UIUX**: Polishing the frontend to improve user experience.
-- **New Features**: Adding features such as the ability to connect with educational platforms such as canvas to reduce dependency on the "honor system" with the users. 
-- **Connecting with Other Crypto Currencies**: I plan to explore additional blockchains, such as BSV, to lower transaction costs, speed up processing times, and give users the flexibility to choose their preferred currency.
+- **Connecting with Other Crypto Currencies**: I plan to explore additional blockchains to lower transaction costs, speed up processing times, and give users the flexibility to choose their preferred currency.
+- **New Features**: 
+  - Adding features such as the ability to connect with educational platforms such as canvas to reduce dependency on the "honor system" with the users.
+  - Enable group tasks where members collaboratively work towards completion, with compensation awarded to those who successfully complete the task.
 
 ---
 
 ## Future Project Ideas
 
-- **Exploring The Bridge Between Blockchain and VR/AR**
-- **HERE**
+- **Exploring the Bridge Between Blockchain and VR/AR**
+- **Exploring the Transition to Digital ID on the Blockchain**
+- **Exploring the Intersection of Copyright/Patents and Blockchain Technology**
 
 ---
