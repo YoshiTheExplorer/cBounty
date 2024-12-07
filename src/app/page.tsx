@@ -2,11 +2,12 @@
 
 import { client } from "./client";
 
-import { ConnectButton, useActiveAccount, useReadContract} from "thirdweb/react";
+import { ConnectButton, useActiveAccount, useReadContract, TransactionButton } from "thirdweb/react";
 import { baseSepolia } from "thirdweb/chains";
-import { getContract } from "thirdweb";
+import { getContract, prepareContractCall } from "thirdweb";
 
 import { TaskCards } from "./components/TaskCards";
+import { AddTaskButton } from "./components/AddCard";
 import { TASKMANAGER_FACTORY } from "./constants/contracts";
 
 export default function Home() {
@@ -28,22 +29,31 @@ export default function Home() {
     params: [userAddressString],
   });
 
-  const taskManagerAddress = contractAddress || "0x3145B15F2842B5272381DA0B147a7417D1aE3Bc8"
+  // Check if User is in System
+  const { data: hasAccount } = useReadContract({
+    contract,
+    method:
+      "function checkAccount(address user) view returns (bool)",
+    params: [userAddressString],
+  });
+
+
+  const taskManagerAddress = contractAddress || "0"
 
   //Login In Page
-  if(!userAddress){
-    return(<StartScreen />)
+  if (!userAddress) {
+    return (<StartScreen />)
   }
 
   //Loading Screen
-  if(isLoadingContract){
-    return(<LoadingScreen />)
+  if (isLoadingContract) {
+    return (<LoadingScreen />)
   }
 
   //Sign In Page
-  if(!contractAddress){
-    return(<CreateAccount 
-      userAddress={userAddress}
+  if (!hasAccount) {
+    return (<CreateAccount
+      contract={contract}
     />)
   }
 
@@ -51,13 +61,12 @@ export default function Home() {
   return (
     <MainPage
       contractAddress={taskManagerAddress}
-      userAddress={userAddress}
     />
   );
 }
 
-function MainPage({contractAddress, userAddress}: { contractAddress: string; userAddress: string;}) {
-  // Fetch the list of tasks from the user's task manager
+function MainPage({ contractAddress }: { contractAddress: string; }) {
+  // Fetch Task
   const { data: tasks, isPending: isLoadingTasks } = useReadContract({
     contract: getContract({
       client: client,
@@ -73,18 +82,16 @@ function MainPage({contractAddress, userAddress}: { contractAddress: string; use
       <div className="py-10">
         <h1 className="text-4xl font-bold mb-4">Tasks:</h1>
         <div className="grid grid-cols-3 gap-4">
-          {!isLoadingTasks && tasks && tasks.length > 0 ? (
+          {tasks && tasks.length > 0 ? (
             tasks.map((task, index) => (
               <TaskCards
                 key={task.name}
-                campaignAddress={contractAddress}
+                contractAddress={contractAddress}
                 index={index}
               />
             ))
-          ) : (
-            <p>No Campaigns {userAddress}</p>
-          )}
-          {/*TODO AddTask*/}
+          ) : (null)}
+          <AddTaskButton contractAddress={contractAddress} />
           {/*FIXME Sort By Time*/}
         </div>
       </div>
@@ -92,16 +99,31 @@ function MainPage({contractAddress, userAddress}: { contractAddress: string; use
   );
 }
 
-function CreateAccount({ userAddress }: { userAddress: string }) {
-  return(
+function CreateAccount({ contract }: { contract: any }) {
+  return (
     <div className="py-20 flex flex-col items-center justify-center min-h-screen">
       <p className="text-4xl font-bold mb-10 text-center">Please Create An Account</p>
-      <div>{userAddress}</div>
+      <TransactionButton
+        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+        transaction={() =>
+          prepareContractCall({
+            contract,
+            method: "function createTaskManager()",
+            params: [],
+          })
+        }
+        onTransactionConfirmed={async () => {
+          alert("Account Created Successfully!");
+        }}
+        onError={(error) => alert(`Error: ${error.message}`)}
+      >
+        Create Account
+      </TransactionButton>
     </div>
   );
 }
 
-function LoadingScreen(){
+function LoadingScreen() {
   return (
     <div className="py-20 flex flex-col items-center justify-center min-h-screen">
       <p className="text-1xl font-bold mb-4 text-center">Loading Task Manager...</p>
@@ -109,7 +131,7 @@ function LoadingScreen(){
   );
 }
 
-function StartScreen(){
+function StartScreen() {
   return (
     <main className="p-4 pb-10 min-h-[100vh] flex items-center justify-center container max-w-screen-lg mx-auto">
       <div className="py-20 flex flex-col items-center justify-center min-h-screen">

@@ -2,21 +2,23 @@
 import { client } from "@/app/client";
 import { getContract, prepareContractCall } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
-import { TransactionButton, useReadContract} from "thirdweb/react";
+import { TransactionButton, useReadContract } from "thirdweb/react";
 import React, { useState } from "react";
 
+//TODO Add Feature To See How Much ETH is Staked
+
 type CampaignCardProps = {
-    campaignAddress: string;
+    contractAddress: string;
     index: number;
 };
 
-export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index }) => {
+export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const contract = getContract({
         client: client,
         chain: baseSepolia,
-        address: campaignAddress,
+        address: contractAddress,
     });
 
     const { data, isPending } = useReadContract({
@@ -68,10 +70,15 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                 </div>
             </div>
 
-
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+                    onClick={() => setIsModalOpen(false)} // Close modal when clicking outside
+                >
+                    <div
+                        className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
+                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
                         <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
                         <p className="mb-4 text-gray-300">{taskDescription}</p>
                         <p className="mb-4 text-gray-400">
@@ -85,7 +92,6 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                                 Close
                             </button>
                             <TransactionButton
-                                //FIXME Why does it not have a blue background? wtf???
                                 className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
                                 transaction={() =>
                                     prepareContractCall({
@@ -95,8 +101,8 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ campaignAddress, index 
                                     })
                                 }
                                 onTransactionConfirmed={async () => {
-                                    alert("Task completed successfully!")
-                                    setIsModalOpen(false)
+                                    alert("Task completed successfully!");
+                                    setIsModalOpen(false);
                                 }}
                                 onError={(error) => alert(`Error: ${error.message}`)}
                             >
