@@ -1,0 +1,16 @@
+{
+  "name": "taskmanager_contracts",
+  "version": "1.0.0",
+  "description": ".",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@matterlabs/hardhat-zksync-solc": "^1.2.5",
+    "hardhat": "^2.22.17"
+  }
+}
