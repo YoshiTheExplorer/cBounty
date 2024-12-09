@@ -5,15 +5,19 @@ import { client } from "./client";
 import { ConnectButton, useActiveAccount, useReadContract, TransactionButton } from "thirdweb/react";
 import { baseSepolia } from "thirdweb/chains";
 import { getContract, prepareContractCall } from "thirdweb";
-
 import { TaskCards } from "./components/TaskCards";
 import { AddTaskButton } from "./components/AddCard";
+import { AddTaskManager } from "./components/AddTaskManager";
 import { TASKMANAGER_FACTORY } from "./constants/contracts";
+import { useTaskManagerStore } from "./states";
 
 export default function Home() {
   // Get User Address
   const userAddress = useActiveAccount()?.address;
   const userAddressString = userAddress || "0";
+
+  // State Machine
+  const { viewMainPage, currentTaskManagerAddress } = useTaskManagerStore();
 
   // Initialize the TASKMANAGER_FACTORY contract
   const contract = getContract({
@@ -22,116 +26,32 @@ export default function Home() {
     address: TASKMANAGER_FACTORY,
   });
 
-  // Fetch the user's personal task manager address
-  const { data: contractAddress, isPending: isLoadingContract } = useReadContract({
+  // Fetch user's list of task managers
+  const { data: taskManagers } = useReadContract({
     contract,
-    method: "function getContract(address user) view returns (address)",
+    method: "function getUserTaskManagers(address user) view returns (address[])",
     params: [userAddressString],
   });
 
-  // Check if User is in System
-  const { data: hasAccount } = useReadContract({
-    contract,
-    method:
-      "function checkAccount(address user) view returns (bool)",
-    params: [userAddressString],
-  });
+  const taskManagerList = taskManagers ? [...taskManagers] : [];
 
-
-  const taskManagerAddress = contractAddress || "0"
-
-  //Login In Page
+  //Welcome Page
   if (!userAddress) {
-    return (<StartScreen />)
+    return (<WelcomePage />)
   }
 
-  //Loading Screen
-  if (isLoadingContract) {
-    return (<LoadingScreen />)
+  //Task Page
+  if (viewMainPage && currentTaskManagerAddress) {
+    return <MainPage contractAddress={currentTaskManagerAddress} />;
   }
 
-  //Sign In Page
-  if (!hasAccount) {
-    return (<CreateAccount
-      contract={contract}
-    />)
-  }
-
-  //Main Page
-  return (
-    <MainPage
-      contractAddress={taskManagerAddress}
-    />
-  );
+  //Task Library Page
+  return (<TaskLibrary
+    taskManagers={taskManagerList}
+  />)
 }
 
-function MainPage({ contractAddress }: { contractAddress: string; }) {
-  // Fetch Task
-  const { data: tasks, isPending: isLoadingTasks } = useReadContract({
-    contract: getContract({
-      client: client,
-      chain: baseSepolia,
-      address: contractAddress,
-    }),
-    method: "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate)[])",
-    params: [],
-  });
-
-  return (
-    <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
-      <div className="py-10">
-        <h1 className="text-4xl font-bold mb-4">Tasks:</h1>
-        <div className="grid grid-cols-3 gap-4">
-          {tasks && tasks.length > 0 ? (
-            tasks.map((task, index) => (
-              <TaskCards
-                key={task.name}
-                contractAddress={contractAddress}
-                index={index}
-              />
-            ))
-          ) : (null)}
-          <AddTaskButton contractAddress={contractAddress} />
-          {/*FIXME Sort By Time*/}
-        </div>
-      </div>
-    </main>
-  );
-}
-
-function CreateAccount({ contract }: { contract: any }) {
-  return (
-    <div className="py-20 flex flex-col items-center justify-center min-h-screen">
-      <p className="text-4xl font-bold mb-10 text-center">Please Create An Account</p>
-      <TransactionButton
-        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-        transaction={() =>
-          prepareContractCall({
-            contract,
-            method: "function createTaskManager()",
-            params: [],
-          })
-        }
-        onTransactionConfirmed={async () => {
-          alert("Account Created Successfully!");
-        }}
-        onError={(error) => alert(`Error: ${error.message}`)}
-      >
-        Create Account
-      </TransactionButton>
-    </div>
-  );
-}
-
-function LoadingScreen() {
-  return (
-    <div className="py-20 flex flex-col items-center justify-center min-h-screen">
-      <p className="text-1xl font-bold mb-4 text-center">Loading Task Manager...</p>
-    </div>
-  );
-}
-
-function StartScreen() {
+function WelcomePage() {
   return (
     <main className="p-4 pb-10 min-h-[100vh] flex items-center justify-center container max-w-screen-lg mx-auto">
       <div className="py-20 flex flex-col items-center justify-center min-h-screen">
@@ -147,3 +67,152 @@ function StartScreen() {
     </main>
   );
 }
+
+function TaskLibrary({ taskManagers }: { taskManagers: string[] }) {
+  // Fetch Task
+  // TODO Update This
+
+  return (
+    <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
+      <div className="py-10">
+        <h1 className="text-4xl font-bold mb-4">Projects:</h1>
+        <div className="grid grid-cols-3 gap-4">
+          {taskManagers.length > 0 ? (
+            taskManagers.map((taskManagerAddress, index) => (
+              <TaskManagerCards
+                key={taskManagerAddress}
+                contractAddress={taskManagerAddress}
+                index={index}
+              />
+            ))
+          ) : (null)}
+          <AddTaskManager contractAddress={TASKMANAGER_FACTORY} />
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function MainPage({ contractAddress }: { contractAddress: string }) {
+  const { setViewMainPage } = useTaskManagerStore();
+
+  const contract = getContract({
+    client: client,
+    chain: baseSepolia,
+    address: TASKMANAGER_FACTORY,
+  });
+
+  const { data: tasks } = useReadContract({
+    contract,
+    method: "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate)[])",
+    params: [],
+  });
+
+  const { data, isPending } = useReadContract({
+    contract,
+    method:
+      "function getTaskManagerDetails(address taskManagerAddress) view returns (string name, address owner, bool isMember)",
+    params: [contractAddress],
+  });
+
+  if (isPending || !data) return <p>Loading Tasks...</p>;
+
+  const [projectName, owner, isMember] = data;
+
+  return (
+    <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
+      <div className="py-10">
+        <h1 className="text-4xl font-bold mb-4">Tasks for {projectName}:</h1>
+        <div className="grid grid-cols-3 gap-4">
+          {tasks && tasks.length > 0 ? (
+            tasks.map((task, index) => (
+              <TaskCards
+                key={task.name}
+                contractAddress={contractAddress}
+                index={index}
+              />
+            ))
+          ) : (null)}
+          <AddTaskButton contractAddress={contractAddress} />
+          {/*FIXME Sort By Time*/}
+        </div>
+      </div>
+      <div className="fixed bottom-4 right-4">
+        <button
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
+          onClick={() => setViewMainPage(false)}
+        >
+          Back to Project Gallery
+        </button>
+      </div>
+      <div className="fixed bottom-4 left-4 px-4 py-2 text-white rounded-lg">
+        Project Address: {contractAddress}
+      </div>
+    </main>
+  );
+}
+
+const TaskManagerCards: React.FC<{ contractAddress: string; index: number }> = ({ contractAddress, index }) => {
+
+  const { setViewMainPage, setCurrentTaskManagerAddress } = useTaskManagerStore();
+
+  const contract = getContract({
+    client: client,
+    chain: baseSepolia,
+    address: TASKMANAGER_FACTORY,
+  });
+
+  const { data, isPending } = useReadContract({
+    contract,
+    method:
+      "function getTaskManagerDetails(address taskManagerAddress) view returns (string name, address owner, bool isMember)",
+    params: [contractAddress],
+  });
+
+  if (isPending) return <p>Loading Projects...</p>;
+  if (!data) return <p>No Projects found.</p>;
+
+  const [projectName, owner, isMember] = data;
+
+  return (
+    <>
+      <div className="flex flex-col justify-between max-w-sm p-6 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg space-y-4">
+        <h5 className="text-2xl font-bold text-white">{projectName}</h5>
+
+        <div className="flex justify-between space-x-4">
+
+          {/* TODO Figure Out How to Enter New Project */}
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            onClick={() => {
+              setViewMainPage(true);
+              setCurrentTaskManagerAddress(contractAddress);
+            }}
+          >
+            Enter Project
+          </button>
+
+
+          {/* TODO Figure Out How to Leave Project */}
+          <TransactionButton
+            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-red-400"
+            transaction={() =>
+              prepareContractCall({
+                contract,
+                method:
+                  "function leaveTaskManager(address taskManagerAddress)",
+                params: [contractAddress],
+              })
+            }
+            onError={(error) => alert(`Error: ${error.message}`)}
+          >
+            Leave Project
+          </TransactionButton>
+
+        </div>
+      </div>
+
+    </>
+  );
+};
+

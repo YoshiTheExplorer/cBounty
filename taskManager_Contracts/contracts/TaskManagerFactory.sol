@@ -66,8 +66,8 @@ contract TaskManagerFactory {
         }
     }
 
-    function getUserTaskManagers() public view returns (address[] memory) {
-        return userTaskManagers[msg.sender];
+    function getUserTaskManagers(address user) public view returns (address[] memory) {
+        return userTaskManagers[user];
     }
 
     function getTaskManagerDetails(address taskManagerAddress) public view returns (string memory name, address owner, bool isMember) {
