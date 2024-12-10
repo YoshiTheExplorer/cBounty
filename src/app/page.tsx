@@ -33,7 +33,16 @@ export default function Home() {
     params: [userAddressString],
   });
 
+  // Fetch username
+  const { data: user} = useReadContract({
+    contract,
+    method:
+      "function getUserName(address user) view returns (string)",
+    params: [userAddressString],
+  });
+
   const taskManagerList = taskManagers ? [...taskManagers] : [];
+  const username = user || userAddressString;
 
   //Welcome Page
   if (!userAddress) {
@@ -48,6 +57,7 @@ export default function Home() {
   //Task Library Page
   return (<TaskLibrary
     taskManagers={taskManagerList}
+    username={username}
   />)
 }
 
@@ -68,12 +78,15 @@ function WelcomePage() {
   );
 }
 
-function TaskLibrary({ taskManagers }: { taskManagers: string[] }) {
-
+function TaskLibrary({ taskManagers, username }: { taskManagers: string[]; username: string }) {
+  //TODO ADD OPTION TO CHANGE USERNAME
   return (
     <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
       <div className="py-10">
         <h1 className="text-4xl font-bold mb-4">Projects:</h1>
+        <button>
+          {username}
+        </button>
         <div className="grid grid-cols-3 gap-4">
           {taskManagers.length > 0 ? (
             taskManagers.map((taskManagerAddress, index) => (

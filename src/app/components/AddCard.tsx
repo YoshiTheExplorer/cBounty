@@ -43,7 +43,7 @@ export const AddTaskButton: React.FC<AddTaskProps> = ({ contractAddress }) => {
         // Prepare contract call to add a task
         const transaction = prepareContractCall({
             contract,
-            method: "function addTask(string _name, string _description, uint256 _dueDate) payable",
+            method: "function addTask(string name, string description, uint256 dueDate) payable",
             params: [
                 taskName,
                 taskDescription,

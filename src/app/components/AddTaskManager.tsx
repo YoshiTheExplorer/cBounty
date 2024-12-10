@@ -28,7 +28,7 @@ export const AddTaskManager: React.FC<AddTaskProps> = ({ contractAddress }) => {
 
     const handleCreateProject = async () => {
         // Make sure taskName and taskDueDate is filled out
-        if (!projectName || !password ) {
+        if (!projectName || !password) {
             alert("All fields are required!");
             return;
         }
@@ -54,12 +54,12 @@ export const AddTaskManager: React.FC<AddTaskProps> = ({ contractAddress }) => {
                 alert("Failed to add project. Please try again.");
             },
         });
-        
+
     };
 
     const handleJoinProject = async () => {
         // Make sure taskName and taskDueDate is filled out
-        if (!projectName || !password ) {
+        if (!projectName || !password) {
             alert("All fields are required!");
             return;
         }
@@ -68,42 +68,43 @@ export const AddTaskManager: React.FC<AddTaskProps> = ({ contractAddress }) => {
         const transaction = prepareContractCall({
             contract,
             method:
-              "function joinTaskManager(address taskManagerAddress, string password)",
+                "function joinTaskManager(address taskManagerAddress, string password)",
             params: [projectName, password],
-          });
+        });
 
         // Send transaction to blockchain
         sendTransaction(transaction, {
             onSuccess: () => {
-                alert("Task added successfully!");
+                alert("Project joined successfully!");
                 // Reset form fields
                 setProjectName("");
                 setPassword("");
+                //FIXME MODAL NOT WORKING WTF
+                setIsModalOpenCreate(false);
+                setIsModalOpenJoin(false);
             },
             onError: (error) => {
                 console.error("Error Joining project:", error);
                 alert("Failed to join project. Please try again.");
             },
         });
-        
+
     };
 
     return (
         <>
-            <div
-                className="flex items-center justify-center max-w-sm h-40 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg cursor-pointer"
-                onClick={() => setIsModalOpenCreate(true)}
-            >
-                <button className="text-2xl font-bold text-white">
+            <div className="flex flex-col items-center justify-between max-w-sm h-auto p-6 bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-lg shadow-lg space-y-6">
+                <button
+                    className="w-full px-4 py-2 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
+                    onClick={() => setIsModalOpenCreate(true)}
+                >
                     Create Project
                 </button>
-            </div>
 
-            <div
-                className="flex items-center justify-center max-w-sm h-40 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg cursor-pointer"
-                onClick={() => setIsModalOpenJoin(true)}
-            >
-                <button className="text-2xl font-bold text-white">
+                <button
+                    className="w-full px-4 py-2 text-lg font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300"
+                    onClick={() => setIsModalOpenJoin(true)}
+                >
                     Join Project
                 </button>
             </div>
@@ -130,7 +131,7 @@ export const AddTaskManager: React.FC<AddTaskProps> = ({ contractAddress }) => {
 
                             {/* Password Input */}
                             <textarea
-                                placeholder="Password"
+                                placeholder="Input Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="px-4 py-2 bg-gray-700 text-white rounded-lg"
@@ -170,7 +171,7 @@ export const AddTaskManager: React.FC<AddTaskProps> = ({ contractAddress }) => {
 
                             {/* Password Input */}
                             <textarea
-                                placeholder="Task Description"
+                                placeholder="Input Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="px-4 py-2 bg-gray-700 text-white rounded-lg"

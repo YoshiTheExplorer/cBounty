@@ -3,7 +3,7 @@
 Email: [cyamada@wisc.edu](mailto:cyamada@wisc.edu)
 
 ---
-
+//TODO
 ## Introduction
 
 **TaskChain** is a platform where users are able to stake their ETH onto personal tasks that needs to be completed. 

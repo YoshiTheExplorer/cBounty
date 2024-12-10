@@ -4,8 +4,8 @@ import { getContract, prepareContractCall } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
 import { TransactionButton, useReadContract } from "thirdweb/react";
 import React, { useState } from "react";
+import { TASKMANAGER_FACTORY } from "../constants/contracts";
 
-//TODO Figure out Double Signature System
 //TODO Add Feature To See How Much ETH is Staked
 
 type CampaignCardProps = {
@@ -40,7 +40,20 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
     if (isPending) return <p>Loading tasks...</p>;
     if (!data || !data[index]) return <p>No tasks found.</p>;
 
-    const { name: taskName, description: taskDescription, dueDate, completedBy, isComplete } = data[index];
+    const { name: taskName, description: taskDescription, dueDate, completedBy: completeAddress, isComplete } = data[index];
+
+    const { data: usernameIncomplete } = useReadContract({
+        contract: getContract({
+            client: client,
+            chain: baseSepolia,
+            address: TASKMANAGER_FACTORY,
+        }),
+        method: "function getUserName(address user) view returns (string)",
+        params: [completeAddress],
+    });
+
+    //TODO ADD OPTION TO CHANGE USERNAME
+    const username = usernameIncomplete || completeAddress;
 
     if (!isAdmin) {
         return (
@@ -102,7 +115,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                             <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
                             <p className="mb-4 text-gray-300">{taskDescription}</p>
                             <p className="mb-4 text-gray-400">
-                                Due: {new Date(Number(dueDate) * 1000).toLocaleString()}
+                                Task Claimed By {username}
                             </p>
                             <div className="flex justify-end space-x-4">
                                 <button
@@ -207,7 +220,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                                 <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
                                 <p className="mb-4 text-gray-300">{taskDescription}</p>
                                 <p className="mb-4 text-gray-400">
-                                    Task Claimed By {completedBy}
+                                    Task Claimed By {username}
                                 </p>
                                 <div className="flex justify-end space-x-4">
                                     <TransactionButton
@@ -324,7 +337,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                                         <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
                                         <p className="mb-4 text-gray-300">{taskDescription}</p>
                                         <p className="mb-4 text-gray-400">
-                                            Task Claimed By {completedBy}
+                                            Task Claimed By {username}
                                         </p>
                                         <div className="flex justify-end space-x-4">
                                             <TransactionButton

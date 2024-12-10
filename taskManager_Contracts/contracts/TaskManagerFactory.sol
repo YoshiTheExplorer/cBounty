@@ -13,6 +13,14 @@ contract TaskManagerFactory {
 
     mapping(address => address[]) private userTaskManagers; //Users List of TaskManagers
     mapping(address => TaskManagerInfo) private taskManagers; //List of All TaskManagers
+    mapping(address => string) private usernames; //List of All TaskManagers
+
+    function changeUserName(string calldata newUsername) external {
+        require(bytes(newUsername).length > 0, "Username cannot be empty");
+        require(bytes(newUsername).length <= 20, "Username too long (max 20 characters)");
+
+        usernames[msg.sender] = newUsername;
+    }
 
     function createTaskManager(string memory name, string memory password) public {
         TaskManager taskManager = new TaskManager(msg.sender); //Link to Owner
@@ -64,6 +72,10 @@ contract TaskManagerFactory {
                 break;
             }
         }
+    }
+
+    function getUserName(address user) external view returns (string memory) {
+        return usernames[user];
     }
 
     function getUserTaskManagers(address user) public view returns (address[] memory) {
