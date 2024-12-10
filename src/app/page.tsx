@@ -10,6 +10,7 @@ import { AddTaskButton } from "./components/AddCard";
 import { AddTaskManager } from "./components/AddTaskManager";
 import { TASKMANAGER_FACTORY } from "./constants/contracts";
 import { useTaskManagerStore } from "./states";
+import React, { useState } from "react";
 
 export default function Home() {
   // Get User Address
@@ -34,7 +35,7 @@ export default function Home() {
   });
 
   // Fetch username
-  const { data: user} = useReadContract({
+  const { data: user } = useReadContract({
     contract,
     method:
       "function getUserName(address user) view returns (string)",
@@ -79,14 +80,23 @@ function WelcomePage() {
 }
 
 function TaskLibrary({ taskManagers, username }: { taskManagers: string[]; username: string }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+
   //TODO ADD OPTION TO CHANGE USERNAME
   return (
     <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
       <div className="py-10">
-        <h1 className="text-4xl font-bold mb-4">Projects:</h1>
-        <button>
-          {username}
-        </button>
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold mb-4">Projects:</h1>
+          <button
+            className="px-1 py-0.5 bg-blue-700 text-white text-xs rounded-md hover:bg-blue-800"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Change Username ({username})
+          </button>
+        </div>
+
         <div className="grid grid-cols-3 gap-4">
           {taskManagers.length > 0 ? (
             taskManagers.map((taskManagerAddress, index) => (
@@ -100,6 +110,59 @@ function TaskLibrary({ taskManagers, username }: { taskManagers: string[]; usern
           <AddTaskManager contractAddress={TASKMANAGER_FACTORY} />
         </div>
       </div>
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="p-6 bg-gray-800 rounded-lg shadow-md max-w-sm w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold text-white mb-4">Change Username</h2>
+            <input
+              type="text"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              placeholder="Enter new username"
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg mb-4"
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+              >
+                Cancel
+              </button>
+              <TransactionButton
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                transaction={() =>
+                  prepareContractCall({
+                    contract: getContract({
+                      client: client,
+                      chain: baseSepolia,
+                      address: TASKMANAGER_FACTORY,
+                    }),
+                    method: "function changeUserName(string newUsername)",
+                    params: [newUsername],
+                  })
+                }
+                onTransactionConfirmed={() => {
+                  alert("Username changed successfully!");
+                  setIsModalOpen(false);
+                  setNewUsername("");
+                }}
+                onError={(error) => {
+                  console.error("Error changing username:", error);
+                  alert("Failed to change username. Please try again.");
+                }}
+              >
+                Change Username
+              </TransactionButton>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
@@ -113,14 +176,14 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
     address: TASKMANAGER_FACTORY,
   });
 
-  const { data : tasks} = useReadContract({
+  const { data: tasks } = useReadContract({
     contract: getContract({
       client: client,
       chain: baseSepolia,
       address: contractAddress,
     }),
     method:
-        "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate, address completedBy, bool isComplete)[])",
+      "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate, address completedBy, bool isComplete)[])",
     params: [],
   });
 
@@ -131,7 +194,7 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
       address: contractAddress,
     }),
     method:
-        "function getAdmin() view returns (address)",
+      "function getAdmin() view returns (address)",
     params: [],
   });
 
@@ -159,23 +222,21 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
                 index={index}
               />
             ))
-          ) : (null)}
-          {isAdmin && (
-            <AddTaskButton contractAddress={contractAddress} />
-          )}
-          {/*FIXME Sort By Time*/}
+          ) : null}
+          {isAdmin && <AddTaskButton contractAddress={contractAddress} />}
+          {/* FIXME Sort By Time */}
         </div>
       </div>
-      <div className="fixed bottom-4 right-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-black text-white px-4 py-2 shadow-lg flex justify-between items-center">
+        <div className="text-sm">
+          Project Address: <span className="font-mono">{contractAddress}</span>
+        </div>
         <button
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
           onClick={() => setViewMainPage(false)}
         >
           Back to Project Gallery
         </button>
-      </div>
-      <div className="fixed bottom-4 left-4 px-4 py-2 text-white rounded-lg">
-        Project Address: {contractAddress}
       </div>
     </main>
   );

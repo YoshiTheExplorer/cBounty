@@ -5,6 +5,7 @@ import { prepareContractCall } from "thirdweb";
 import { useSendTransaction } from "thirdweb/react";
 import { getContract } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
+import { toWei } from "thirdweb/utils";
 
 type AddTaskProps = {
     contractAddress: string;
@@ -15,6 +16,7 @@ export const AddTaskButton: React.FC<AddTaskProps> = ({ contractAddress }) => {
     const [taskName, setTaskName] = useState("");
     const [taskDescription, setTaskDescription] = useState("")
     const [taskDueDate, setTaskDueDate] = useState("");
+    const [bountyPrice, setBountyPrice] = useState("");
 
     // Initialize contract
     const contract = getContract({
@@ -49,6 +51,7 @@ export const AddTaskButton: React.FC<AddTaskProps> = ({ contractAddress }) => {
                 taskDescription,
                 BigInt(Math.floor(new Date(taskDueDate).getTime() / 1000)),
             ],
+            value: toWei(bountyPrice),
         });
 
         // Send transaction to blockchain
@@ -59,6 +62,8 @@ export const AddTaskButton: React.FC<AddTaskProps> = ({ contractAddress }) => {
                 setTaskName("");
                 setTaskDescription("");
                 setTaskDueDate("");
+                setBountyPrice("");
+                setIsModalOpen(false);
             },
             onError: (error) => {
                 console.error("Error adding task:", error);
@@ -113,6 +118,14 @@ export const AddTaskButton: React.FC<AddTaskProps> = ({ contractAddress }) => {
                                 placeholder="Due Date and Time"
                                 value={taskDueDate}
                                 onChange={(e) => setTaskDueDate(e.target.value)}
+                                className="px-4 py-2 bg-gray-700 text-white rounded-lg"
+                            />
+
+                            {/* Task Bounty Input */}
+                            <input
+                                placeholder="Bounty (Leave Empty if N/A)"
+                                value={bountyPrice}
+                                onChange={(e) => setBountyPrice(e.target.value)}
                                 className="px-4 py-2 bg-gray-700 text-white rounded-lg"
                             />
 

@@ -6,12 +6,13 @@ import { TransactionButton, useReadContract } from "thirdweb/react";
 import React, { useState } from "react";
 import { TASKMANAGER_FACTORY } from "../constants/contracts";
 
-//TODO Add Feature To See How Much ETH is Staked
-
 type CampaignCardProps = {
     contractAddress: string;
     index: number;
 };
+
+//TODO Make Description wrap around
+//TODO Fix Styling
 
 export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,7 +41,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
     if (isPending) return <p>Loading tasks...</p>;
     if (!data || !data[index]) return <p>No tasks found.</p>;
 
-    const { name: taskName, description: taskDescription, dueDate, completedBy: completeAddress, isComplete } = data[index];
+    const { name: taskName, description: taskDescription, bounty, dueDate, completedBy: completeAddress, isComplete } = data[index];
 
     const { data: usernameIncomplete } = useReadContract({
         contract: getContract({
@@ -52,7 +53,6 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
         params: [completeAddress],
     });
 
-    //TODO ADD OPTION TO CHANGE USERNAME
     const username = usernameIncomplete || completeAddress;
 
     if (!isAdmin) {
@@ -63,6 +63,10 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
 
                     <p className="text-gray-400">
                         <strong>Due:</strong> {new Date(Number(dueDate) * 1000).toLocaleString()}
+                    </p>
+
+                    <p className="text-gray-400">
+                        <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH /
                     </p>
 
                     <div className="flex justify-between space-x-4">
@@ -117,6 +121,9 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                             <p className="mb-4 text-gray-400">
                                 Task Claimed By {username}
                             </p>
+                            <p className="text-gray-400">
+                                <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
+                            </p>
                             <div className="flex justify-end space-x-4">
                                 <button
                                     onClick={() => setIsModalOpen(false)}
@@ -166,6 +173,10 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
 
                 <p className="text-gray-400">
                     <strong>Due:</strong> {new Date(Number(dueDate) * 1000).toLocaleString()}
+                </p>
+
+                <p className="text-gray-400">
+                    <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
                 </p>
 
                 <div className="flex justify-between space-x-4">
@@ -221,6 +232,9 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                                 <p className="mb-4 text-gray-300">{taskDescription}</p>
                                 <p className="mb-4 text-gray-400">
                                     Task Claimed By {username}
+                                </p>
+                                <p className="text-gray-400">
+                                    <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
                                 </p>
                                 <div className="flex justify-end space-x-4">
                                     <TransactionButton
@@ -282,6 +296,9 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                         <p className="mb-4 text-gray-400">
                             Due: {new Date(Number(dueDate) * 1000).toLocaleString()}
                         </p>
+                        <p className="text-gray-400">
+                            <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
+                        </p>
                         <div className="flex justify-end space-x-4">
                             <button
                                 onClick={() => setIsModalOpen(false)}
@@ -338,6 +355,9 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                                         <p className="mb-4 text-gray-300">{taskDescription}</p>
                                         <p className="mb-4 text-gray-400">
                                             Task Claimed By {username}
+                                        </p>
+                                        <p className="text-gray-400">
+                                            <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
                                         </p>
                                         <div className="flex justify-end space-x-4">
                                             <TransactionButton
