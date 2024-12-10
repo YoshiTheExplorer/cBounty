@@ -69,8 +69,6 @@ function WelcomePage() {
 }
 
 function TaskLibrary({ taskManagers }: { taskManagers: string[] }) {
-  // Fetch Task
-  // TODO Update This
 
   return (
     <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
@@ -102,9 +100,25 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
     address: TASKMANAGER_FACTORY,
   });
 
-  const { data: tasks } = useReadContract({
-    contract,
-    method: "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate)[])",
+  const { data : tasks} = useReadContract({
+    contract: getContract({
+      client: client,
+      chain: baseSepolia,
+      address: contractAddress,
+    }),
+    method:
+        "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate, address completedBy, bool isComplete)[])",
+    params: [],
+  });
+
+  const { data: isAdmin } = useReadContract({
+    contract: getContract({
+      client: client,
+      chain: baseSepolia,
+      address: contractAddress,
+    }),
+    method:
+        "function getAdmin() view returns (address)",
     params: [],
   });
 
@@ -133,7 +147,9 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
               />
             ))
           ) : (null)}
-          <AddTaskButton contractAddress={contractAddress} />
+          {isAdmin && (
+            <AddTaskButton contractAddress={contractAddress} />
+          )}
           {/*FIXME Sort By Time*/}
         </div>
       </div>
@@ -181,7 +197,6 @@ const TaskManagerCards: React.FC<{ contractAddress: string; index: number }> = (
 
         <div className="flex justify-between space-x-4">
 
-          {/* TODO Figure Out How to Enter New Project */}
           <button
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             onClick={() => {
@@ -192,8 +207,6 @@ const TaskManagerCards: React.FC<{ contractAddress: string; index: number }> = (
             Enter Project
           </button>
 
-
-          {/* TODO Figure Out How to Leave Project */}
           <TransactionButton
             className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-red-400"
             transaction={() =>
