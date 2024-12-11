@@ -17,7 +17,7 @@ By staking ETH onto tasks similar to posting a bounty, cBounty's goals is to inc
 
 https://multiplayer.d2fd4on7uwj4rx.amplifyapp.com
 
-Please let me know through my email if there are any noticible issues or any feedback.
+Please feel free to notify me via email if you come across any noticeable issues or have any feedback.
 
 Thank you!
 

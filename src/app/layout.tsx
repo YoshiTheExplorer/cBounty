@@ -6,7 +6,7 @@ import { ThirdwebProvider } from "thirdweb/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TaskManager",
+  title: "cBounty",
 };
 
 export default function RootLayout({
