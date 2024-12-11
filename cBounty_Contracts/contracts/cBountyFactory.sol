@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {TaskManager} from "./TaskManager.sol";
+import {cBounty} from "./cBounty.sol";
 
-contract TaskManagerFactory {
+contract CBountyFactory {
     struct TaskManagerInfo {
         string name;
         address owner;
@@ -23,7 +23,7 @@ contract TaskManagerFactory {
     }
 
     function createTaskManager(string memory name, string memory password) public {
-        TaskManager taskManager = new TaskManager(msg.sender); //Link to Owner
+        cBounty taskManager = new cBounty(msg.sender); //Link to Owner
 
         TaskManagerInfo storage taskManagerInfo = taskManagers[address(taskManager)];
 

@@ -11,6 +11,15 @@ type CampaignCardProps = {
     index: number;
 };
 
+type Task = {
+    name: string;
+    description: string;
+    bounty: bigint;
+    dueDate: bigint;
+    completedBy: string;
+    isComplete: boolean;
+};
+
 //TODO Make Description wrap around
 //TODO Fix Styling
 
@@ -24,36 +33,43 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
         address: contractAddress,
     });
 
-    const { data: isAdmin } = useReadContract({
+    // Fetch admin status
+    const isAdmin = useReadContract({
         contract,
-        method:
-            "function getAdmin() view returns (address)",
+        method: "function getAdmin() view returns (address)",
         params: [],
     });
 
-    const { data, isPending } = useReadContract({
+    // Fetch all tasks
+    const tasks = useReadContract({
         contract,
-        method:
-            "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate, address completedBy, bool isComplete)[])",
+        method: "function getList() view returns ((string name, string description, uint256 bounty, uint256 dueDate, address completedBy, bool isComplete)[])",
         params: [],
     });
 
-    if (isPending) return <p>Loading tasks...</p>;
-    if (!data || !data[index]) return <p>No tasks found.</p>;
-
-    const { name: taskName, description: taskDescription, bounty, dueDate, completedBy: completeAddress, isComplete } = data[index];
-
-    const { data: usernameIncomplete } = useReadContract({
+    // Fetch username for the completedBy address
+    const usernameQuery = useReadContract({
         contract: getContract({
             client: client,
             chain: baseSepolia,
             address: TASKMANAGER_FACTORY,
         }),
         method: "function getUserName(address user) view returns (string)",
-        params: [completeAddress],
+        params: [tasks.data ? tasks.data[index]?.completedBy : ""],
     });
 
-    const username = usernameIncomplete || completeAddress;
+    // Handle loading and missing data
+    if (tasks.isPending || !tasks.data) {
+        return <p>Loading tasks...</p>;
+    }
+
+    if (!tasks.data[index]) {
+        return <p>No tasks found.</p>;
+    }
+
+    // Extract task details
+    const { name: taskName, description: taskDescription, bounty, dueDate, completedBy: completeAddress, isComplete } = tasks.data[index];
+    const username = usernameQuery.data || completeAddress;
 
     if (!isAdmin) {
         return (

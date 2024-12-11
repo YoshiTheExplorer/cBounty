@@ -83,7 +83,6 @@ function TaskLibrary({ taskManagers, username }: { taskManagers: string[]; usern
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUsername, setNewUsername] = useState("");
 
-  //TODO ADD OPTION TO CHANGE USERNAME
   return (
     <main className="mx-auto max-w-7xl px-4 mt-4 sm:px-6 lg:px-8">
       <div className="py-10">
