@@ -66,7 +66,7 @@ function WelcomePage() {
   return (
     <main className="p-4 pb-10 min-h-[100vh] flex items-center justify-center container max-w-screen-lg mx-auto">
       <div className="py-20 flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-4xl font-bold mb-10 text-center">Welcome to TaskChain</h1>
+        <h1 className="text-4xl font-bold mb-10 text-center">Welcome to cBounty</h1>
         <h2 className="text-1xl font-bold mb-4 text-center">Please Connect Your Wallet</h2>
         <div className="flex items-center justify-center w-full">
           <ConnectButton
