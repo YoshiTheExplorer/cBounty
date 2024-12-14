@@ -51,7 +51,7 @@ p.s: The website will be running until 12/24
 
 ---
 
-## What’s Next for TaskChain
+## What’s Next for cBounty
 
 I plan to continue developing TaskChain by focusing on...
 - **UIUX**: Polishing the frontend to improve user experience.
