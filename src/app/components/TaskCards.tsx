@@ -183,96 +183,148 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                 )}
             </>
         )
-    }
+    } else {
+        return (
+            <>
+                <div className="flex flex-col justify-between max-w-sm p-6 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg space-y-4">
+                    <h5 className="text-2xl font-bold text-white">{taskName}</h5>
 
-    return (
-        <>
-            <div className="flex flex-col justify-between max-w-sm p-6 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg space-y-4">
-                <h5 className="text-2xl font-bold text-white">{taskName}</h5>
+                    <p className="text-gray-400">
+                        <strong>Due:</strong> {new Date(Number(dueDate) * 1000).toLocaleString()}
+                    </p>
 
-                <p className="text-gray-400">
-                    <strong>Due:</strong> {new Date(Number(dueDate) * 1000).toLocaleString()}
-                </p>
+                    <p className="text-gray-400">
+                        <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
+                    </p>
 
-                <p className="text-gray-400">
-                    <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
-                </p>
-
-                <div className="flex justify-between space-x-4">
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200"
-                    >
-                        More Details
-                    </button>
-
-                    {!isComplete && (
-                        <TransactionButton
-                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-                            transaction={() =>
-                                prepareContractCall({
-                                    contract,
-                                    method: "function approveTaskCompletion(uint256 _index)",
-                                    params: [BigInt(index)],
-                                })
-                            }
-                            onTransactionConfirmed={async () => {
-                                alert("Task completed successfully!");
-                                setIsModalOpen(false);
-                            }}
-                            onError={(error) => alert(`Error: ${error.message}`)}
-                        >
-                            Complete Task
-                        </TransactionButton>
-                    )}
-
-                    {isComplete && (
+                    <div className="flex justify-between space-x-4">
                         <button
-                            onClick={() => {
-                                setIsTaskApprovalOpen(true);
-                            }}
-                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                            onClick={() => setIsModalOpen(true)}
+                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-200"
                         >
-                            Task Claimed
+                            More Details
                         </button>
-                    )}
 
-                    {isTaskApprovalOpen && (
-
-                        <div
-                            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
-                            onClick={() => setIsTaskApprovalOpen(false)} // Close modal when clicking outside
-                        >
-                            <div
-                                className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
-                                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                        {!isComplete && (
+                            <TransactionButton
+                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                                transaction={() =>
+                                    prepareContractCall({
+                                        contract,
+                                        method: "function approveTaskCompletion(uint256 _index)",
+                                        params: [BigInt(index)],
+                                    })
+                                }
+                                onTransactionConfirmed={async () => {
+                                    alert("Task completed successfully!");
+                                    setIsModalOpen(false);
+                                }}
+                                onError={(error) => alert(`Error: ${error.message}`)}
                             >
-                                <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
-                                <p className="mb-4 text-gray-300">{taskDescription}</p>
-                                <p className="mb-4 text-gray-400">
-                                    Task Claimed By {username}
-                                </p>
-                                <p className="text-gray-400">
-                                    <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
-                                </p>
-                                <div className="flex justify-end space-x-4">
-                                    <TransactionButton
-                                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-                                        transaction={() =>
-                                            prepareContractCall({
-                                                contract,
-                                                method: "function rejectTaskCompletion(uint256 _index)",
-                                                params: [BigInt(index)],
-                                            })
-                                        }
-                                        onTransactionConfirmed={async () => {
-                                            alert("Task Rejected Successfully!");
-                                            setIsTaskApprovalOpen(false);
-                                        }}
-                                        onError={(error) => alert(`Error: ${error.message}`)}
-                                    >
-                                        Reject Task
-                                    </TransactionButton>
+                                Complete Task
+                            </TransactionButton>
+                        )}
+
+                        {isComplete && (
+                            <button
+                                onClick={() => {
+                                    setIsTaskApprovalOpen(true);
+                                }}
+                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                            >
+                                Task Claimed
+                            </button>
+                        )}
+
+                        {isTaskApprovalOpen && (
+
+                            <div
+                                className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+                                onClick={() => setIsTaskApprovalOpen(false)} // Close modal when clicking outside
+                            >
+                                <div
+                                    className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
+                                    onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                                >
+                                    <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
+                                    <p className="mb-4 text-gray-300">{taskDescription}</p>
+                                    <p className="mb-4 text-gray-400">
+                                        Task Claimed By {username}
+                                    </p>
+                                    <p className="text-gray-400">
+                                        <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
+                                    </p>
+                                    <div className="flex justify-end space-x-4">
+                                        <TransactionButton
+                                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                                            transaction={() =>
+                                                prepareContractCall({
+                                                    contract,
+                                                    method: "function rejectTaskCompletion(uint256 _index)",
+                                                    params: [BigInt(index)],
+                                                })
+                                            }
+                                            onTransactionConfirmed={async () => {
+                                                alert("Task Rejected Successfully!");
+                                                setIsTaskApprovalOpen(false);
+                                            }}
+                                            onError={(error) => alert(`Error: ${error.message}`)}
+                                        >
+                                            Reject Task
+                                        </TransactionButton>
+                                        <TransactionButton
+                                            className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                                            transaction={() =>
+                                                prepareContractCall({
+                                                    contract,
+                                                    method: "function approveTaskCompletion(uint256 _index)",
+                                                    params: [BigInt(index)],
+                                                })
+                                            }
+                                            onTransactionConfirmed={async () => {
+                                                alert("Task completed successfully!");
+                                                setIsTaskApprovalOpen(false);
+                                            }}
+                                            onError={(error) => alert(`Error: ${error.message}`)}
+                                        >
+                                            Approve Task
+                                        </TransactionButton>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+
+                {isModalOpen && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+                        onClick={() => {
+                            setIsModalOpen(false)
+                            setIsTaskApprovalOpen(false);
+                        }} // Close modal when clicking outside
+                    >
+                        <div
+                            className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
+                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                        >
+                            <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
+                            <p className="mb-4 text-gray-300">{taskDescription}</p>
+                            <p className="mb-4 text-gray-400">
+                                Due: {new Date(Number(dueDate) * 1000).toLocaleString()}
+                            </p>
+                            <p className="text-gray-400">
+                                <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
+                            </p>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
+                                >
+                                    Close
+                                </button>
+                                {!isComplete && (
                                     <TransactionButton
                                         className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
                                         transaction={() =>
@@ -284,145 +336,93 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
                                         }
                                         onTransactionConfirmed={async () => {
                                             alert("Task completed successfully!");
-                                            setIsTaskApprovalOpen(false);
+                                            setIsModalOpen(false);
                                         }}
                                         onError={(error) => alert(`Error: ${error.message}`)}
                                     >
-                                        Approve Task
+                                        Complete Task
                                     </TransactionButton>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                                )}
 
-                </div>
-            </div>
-
-            {isModalOpen && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
-                    onClick={() => {
-                        setIsModalOpen(false)
-                        setIsTaskApprovalOpen(false);
-                    }} // Close modal when clicking outside
-                >
-                    <div
-                        className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
-                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-                    >
-                        <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
-                        <p className="mb-4 text-gray-300">{taskDescription}</p>
-                        <p className="mb-4 text-gray-400">
-                            Due: {new Date(Number(dueDate) * 1000).toLocaleString()}
-                        </p>
-                        <p className="text-gray-400">
-                            <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
-                        </p>
-                        <div className="flex justify-end space-x-4">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700"
-                            >
-                                Close
-                            </button>
-                            {!isComplete && (
-                                <TransactionButton
-                                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-                                    transaction={() =>
-                                        prepareContractCall({
-                                            contract,
-                                            method: "function approveTaskCompletion(uint256 _index)",
-                                            params: [BigInt(index)],
-                                        })
-                                    }
-                                    onTransactionConfirmed={async () => {
-                                        alert("Task completed successfully!");
-                                        setIsModalOpen(false);
-                                    }}
-                                    onError={(error) => alert(`Error: ${error.message}`)}
-                                >
-                                    Complete Task
-                                </TransactionButton>
-                            )}
-
-                            {isComplete && (
-                                <button
-                                    onClick={() => {
-                                        setIsTaskApprovalOpen(true);
-                                        setIsModalOpen(false);
-                                    }}
-                                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-                                >
-                                    Task Claimed
-                                </button>
-                            )}
-
-                            {isTaskApprovalOpen && (
-
-                                <div
-                                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
-                                    onClick={() => {
-                                        setIsTaskApprovalOpen(false)
-                                        setIsModalOpen(false);
-                                    }} // Close modal when clicking outside
-                                >
-                                    <div
-                                        className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
-                                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                                {isComplete && (
+                                    <button
+                                        onClick={() => {
+                                            setIsTaskApprovalOpen(true);
+                                            setIsModalOpen(false);
+                                        }}
+                                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
                                     >
-                                        <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
-                                        <p className="mb-4 text-gray-300">{taskDescription}</p>
-                                        <p className="mb-4 text-gray-400">
-                                            Task Claimed By {username}
-                                        </p>
-                                        <p className="text-gray-400">
-                                            <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
-                                        </p>
-                                        <div className="flex justify-end space-x-4">
-                                            <TransactionButton
-                                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-                                                transaction={() =>
-                                                    prepareContractCall({
-                                                        contract,
-                                                        method: "function rejectTaskCompletion(uint256 _index)",
-                                                        params: [BigInt(index)],
-                                                    })
-                                                }
-                                                onTransactionConfirmed={async () => {
-                                                    alert("Task Rejected Successfully!");
-                                                    setIsTaskApprovalOpen(false);
-                                                    setIsModalOpen(false);
-                                                }}
-                                                onError={(error) => alert(`Error: ${error.message}`)}
-                                            >
-                                                Reject Task
-                                            </TransactionButton>
-                                            <TransactionButton
-                                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
-                                                transaction={() =>
-                                                    prepareContractCall({
-                                                        contract,
-                                                        method: "function approveTaskCompletion(uint256 _index)",
-                                                        params: [BigInt(index)],
-                                                    })
-                                                }
-                                                onTransactionConfirmed={async () => {
-                                                    alert("Task completed successfully!");
-                                                    setIsTaskApprovalOpen(false);
-                                                    setIsModalOpen(false);
-                                                }}
-                                                onError={(error) => alert(`Error: ${error.message}`)}
-                                            >
-                                                Approve Task
-                                            </TransactionButton>
+                                        Task Claimed
+                                    </button>
+                                )}
+
+                                {isTaskApprovalOpen && (
+
+                                    <div
+                                        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+                                        onClick={() => {
+                                            setIsTaskApprovalOpen(false)
+                                            setIsModalOpen(false);
+                                        }} // Close modal when clicking outside
+                                    >
+                                        <div
+                                            className="bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm"
+                                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+                                        >
+                                            <h5 className="mb-4 text-2xl font-bold">{taskName}</h5>
+                                            <p className="mb-4 text-gray-300">{taskDescription}</p>
+                                            <p className="mb-4 text-gray-400">
+                                                Task Claimed By {username}
+                                            </p>
+                                            <p className="text-gray-400">
+                                                <strong>Bounty:</strong> {Number(bounty) / 1e18} ETH
+                                            </p>
+                                            <div className="flex justify-end space-x-4">
+                                                <TransactionButton
+                                                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                                                    transaction={() =>
+                                                        prepareContractCall({
+                                                            contract,
+                                                            method: "function rejectTaskCompletion(uint256 _index)",
+                                                            params: [BigInt(index)],
+                                                        })
+                                                    }
+                                                    onTransactionConfirmed={async () => {
+                                                        alert("Task Rejected Successfully!");
+                                                        setIsTaskApprovalOpen(false);
+                                                        setIsModalOpen(false);
+                                                    }}
+                                                    onError={(error) => alert(`Error: ${error.message}`)}
+                                                >
+                                                    Reject Task
+                                                </TransactionButton>
+                                                <TransactionButton
+                                                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-400 rounded-lg hover:bg-green-400 focus:ring-4 focus:outline-none focus:ring-green-400"
+                                                    transaction={() =>
+                                                        prepareContractCall({
+                                                            contract,
+                                                            method: "function approveTaskCompletion(uint256 _index)",
+                                                            params: [BigInt(index)],
+                                                        })
+                                                    }
+                                                    onTransactionConfirmed={async () => {
+                                                        alert("Task completed successfully!");
+                                                        setIsTaskApprovalOpen(false);
+                                                        setIsModalOpen(false);
+                                                    }}
+                                                    onError={(error) => alert(`Error: ${error.message}`)}
+                                                >
+                                                    Approve Task
+                                                </TransactionButton>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </>
-    );
+                )}
+            </>
+        );
+    }
 };

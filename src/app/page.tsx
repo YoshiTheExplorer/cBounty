@@ -169,6 +169,9 @@ function TaskLibrary({ taskManagers, username }: { taskManagers: string[]; usern
 function MainPage({ contractAddress }: { contractAddress: string }) {
   const { setViewMainPage } = useTaskManagerStore();
 
+  const userAddress = useActiveAccount()?.address;
+  const userAddressString = userAddress || "0";
+
   const contract = getContract({
     client: client,
     chain: baseSepolia,
@@ -186,7 +189,7 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
     params: [],
   });
 
-  const { data: isAdmin } = useReadContract({
+  const { data: getAdmin } = useReadContract({
     contract: getContract({
       client: client,
       chain: baseSepolia,
@@ -222,7 +225,7 @@ function MainPage({ contractAddress }: { contractAddress: string }) {
               />
             ))
           ) : null}
-          {isAdmin && <AddTaskButton contractAddress={contractAddress} />}
+          {(String(getAdmin) == userAddressString) && <AddTaskButton contractAddress={contractAddress} />}
           {/* FIXME Sort By Time */}
         </div>
       </div>
