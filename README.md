@@ -15,7 +15,7 @@ By staking ETH onto tasks similar to posting a bounty, cBounty's goals is to inc
 
 ## Link to Website
 
-https://multiplayer.d2fd4on7uwj4rx.amplifyapp.com
+[https://multiplayer.d2fd4on7uwj4rx.amplifyapp.com](https://multiplayer.d2ban3o4n056iz.amplifyapp.com)
 
 Since this only accepts Base Sepolia ETH so far, please obtain the test tokens from 
 https://portal.cdp.coinbase.com/products/faucet?projectId=098b1c5d-26bb-44a6-a823-7181ddb15977.
