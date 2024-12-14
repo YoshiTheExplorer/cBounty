@@ -2,7 +2,7 @@
 import { client } from "@/app/client";
 import { getContract, prepareContractCall } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
-import { TransactionButton, useReadContract } from "thirdweb/react";
+import { TransactionButton, useReadContract, useActiveAccount } from "thirdweb/react";
 import React, { useState } from "react";
 import { TASKMANAGER_FACTORY } from "../constants/contracts";
 
@@ -27,6 +27,9 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTaskApprovalOpen, setIsTaskApprovalOpen] = useState(false);
 
+    const userAddress = useActiveAccount()?.address;
+    const userAddressString = userAddress || "0";
+
     const contract = getContract({
         client: client,
         chain: baseSepolia,
@@ -34,7 +37,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
     });
 
     // Fetch admin status
-    const isAdmin = useReadContract({
+    const getAdmin = useReadContract({
         contract,
         method: "function getAdmin() view returns (address)",
         params: [],
@@ -71,7 +74,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
     const { name: taskName, description: taskDescription, bounty, dueDate, completedBy: completeAddress, isComplete } = tasks.data[index];
     const username = usernameQuery.data || completeAddress;
 
-    if (!isAdmin) {
+    if (String(getAdmin) != userAddressString) {
         return (
             <>
                 <div className="flex flex-col justify-between max-w-sm p-6 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg space-y-4">
