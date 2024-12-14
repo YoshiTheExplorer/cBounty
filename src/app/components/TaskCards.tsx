@@ -74,7 +74,7 @@ export const TaskCards: React.FC<CampaignCardProps> = ({ contractAddress, index 
     const { name: taskName, description: taskDescription, bounty, dueDate, completedBy: completeAddress, isComplete } = tasks.data[index];
     const username = usernameQuery.data || completeAddress;
 
-    if (String(getAdmin) == userAddressString) {
+    if (String(getAdmin) != userAddressString) {
         return (
             <>
                 <div className="flex flex-col justify-between max-w-sm p-6 bg-gradient-to-br from-gray-800 to-black border border-gray-700 rounded-lg shadow-lg space-y-4">
