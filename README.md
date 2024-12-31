@@ -24,8 +24,6 @@ Please feel free to notify me via email if you come across any noticeable issues
 
 Thank you!
 
-p.s: The website will be running until 12/24
-
 ---
 
 ## How It Was Built 
