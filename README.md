@@ -51,7 +51,7 @@ Thank you!
 
 ## What’s Next for cBounty
 
-I plan to continue developing TaskChain by focusing on...
+I plan to continue developing cBounty by focusing on...
 - **UIUX**: Polishing the frontend to improve user experience.
 - **Connecting with Other Crypto Currencies**: I plan to explore additional blockchains to lower transaction costs, speed up processing times, and give users the flexibility to choose their preferred currency.
 - **New Features**: 
