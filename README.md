@@ -63,6 +63,5 @@ I plan to continue developing cBounty by focusing on...
 
 - **Exploring the Bridge Between Blockchain and VR/AR**
 - **Exploring the Transition to Digital ID on the Blockchain**
-- **Exploring the Intersection of Copyright/Patents and Blockchain Technology**
 
 ---
